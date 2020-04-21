@@ -8,6 +8,7 @@ from sklearn.externals import joblib
 
 ## TODO: Import any additional libraries you need to define a model
 from sklearn.svm import SVC
+from sklearn.model_selection import GridSearchCV
 
 # Provided model load function
 def model_fn(model_dir):
@@ -37,8 +38,12 @@ if __name__ == '__main__':
     parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
-    
+
     ## TODO: Add any additional arguments that you will need to pass into your model
+    
+    parser.add_argument('--reg', type=int, default=1)
+    #parser.add_argument('--gamma', type=int, default=2)
+    
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -51,17 +56,18 @@ if __name__ == '__main__':
     train_y = train_data.iloc[:,0]
     train_x = train_data.iloc[:,1:]
     
-    
+    reg = args.reg
+    #gamma = args.gamma
     ## --- Your code here --- ##
     
-
     ## TODO: Define a model 
-    model = SVC()
-    
+    param_grid = {'C':[0.1,1,10,100,1000], 'gamma':[1,0.1,0.01,0.001,0.0001]}
+    model = GridSearchCV(SVC(),param_grid,verbose=2)
     
     ## TODO: Train the model
+    model.fit(train_x, train_y)
+    model.best_params_
     
-    model.fit(train_x,train_y)
     
     ## --- End of your code  --- ##
     
